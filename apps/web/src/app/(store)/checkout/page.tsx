@@ -22,7 +22,6 @@ const addressSchema = z.object({
 
 const PAYMENT_METHODS = [
   { id: 'COD', label: 'Cash on Delivery', icon: Banknote, desc: 'Pay when you receive' },
-  { id: 'BKASH', label: 'bKash', icon: Wallet, desc: 'Pay via bKash mobile banking' },
   { id: 'SSLCOMMERZ', label: 'Card / Net Banking', icon: CreditCard, desc: 'Visa, Mastercard, etc.' },
 ];
 
@@ -64,10 +63,27 @@ export default function CheckoutPage() {
     },
   });
 
+  const initiateSSLMutation = useMutation({
+    mutationFn: (orderId: string) =>
+      api.post('/payments/sslcommerz/initiate', { orderId }).then(r => r.data),
+  });
+
   const placeOrderMutation = useMutation({
     mutationFn: (data: any) => api.post('/orders', data).then(r => r.data),
-    onSuccess: (order) => {
+    onSuccess: async (order) => {
       qc.invalidateQueries({ queryKey: ['cart'] });
+
+      if (order.paymentMethod === 'SSLCOMMERZ') {
+        try {
+          const { redirectURL } = await initiateSSLMutation.mutateAsync(order.id);
+          window.location.href = redirectURL;
+        } catch {
+          toast.error('Could not start card payment. Please try again.');
+          router.push(`/orders/${order.id}`);
+        }
+        return;
+      }
+
       toast.success('Order placed successfully!');
       router.push(`/orders/${order.id}`);
     },
@@ -256,10 +272,14 @@ export default function CheckoutPage() {
 
             <button
               onClick={handlePlaceOrder}
-              disabled={placeOrderMutation.isPending || !selectedAddress}
+              disabled={
+                placeOrderMutation.isPending ||
+                initiateSSLMutation.isPending ||
+                !selectedAddress
+              }
               className="w-full mt-5 bg-brand-700 hover:bg-brand-800 disabled:opacity-60 text-white font-semibold py-3 rounded-xl flex items-center justify-center gap-2 transition-colors"
             >
-              {placeOrderMutation.isPending ? (
+              {(placeOrderMutation.isPending || initiateSSLMutation.isPending) ? (
                 <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
               ) : (
                 <>Place Order <ChevronRight className="w-4 h-4" /></>

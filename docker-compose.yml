@@ -55,7 +55,14 @@ services:
       RESEND_API_KEY: your_resend_api_key
       GREEN_WEB_BD_API_KEY: your_green_web_bd_key
       GREEN_WEB_BD_SENDER_ID: your_sender_id
+      FROM_EMAIL: Pharmaci <no-reply@pharmaci.com.bd>
+      ADMIN_EMAIL: admin@pharmaci.com.bd
       NODE_ENV: development
+      APP_URL: http://localhost:3000
+      API_URL: http://localhost:4000
+      SSLCOMMERZ_STORE_ID: wakuw696fc5eeea7a0
+      SSLCOMMERZ_STORE_PASS: wakuw696fc5eeea7a0@ssl
+      SSLCOMMERZ_IS_LIVE: 'false'
     volumes:
       - ./apps/api:/app
       - api_node_modules:/app/node_modules

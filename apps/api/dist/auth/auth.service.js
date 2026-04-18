@@ -18,13 +18,13 @@ class TooManyRequestsException extends common_1.HttpException {
     }
 }
 const prisma_service_1 = require("../prisma/prisma.service");
-const sms_service_1 = require("../notifications/sms.service");
+const notifications_service_1 = require("../notifications/notifications.service");
 const client_1 = require("@prisma/client");
 let AuthService = class AuthService {
-    constructor(prisma, jwtService, smsService) {
+    constructor(prisma, jwtService, notificationsService) {
         this.prisma = prisma;
         this.jwtService = jwtService;
-        this.smsService = smsService;
+        this.notificationsService = notificationsService;
     }
     async sendOtp(dto) {
         const { phone } = dto;
@@ -48,7 +48,7 @@ let AuthService = class AuthService {
         await this.prisma.otpToken.create({
             data: { phone, otp, purpose: client_1.OtpPurpose.LOGIN, expiresAt },
         });
-        await this.smsService.sendOtp(phone, otp);
+        await this.notificationsService.notifyOtpSend({ phone, otp });
         const userExists = await this.prisma.user.findUnique({
             where: { phone },
             select: { id: true, name: true },
@@ -182,6 +182,6 @@ exports.AuthService = AuthService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
         jwt_1.JwtService,
-        sms_service_1.SmsService])
+        notifications_service_1.NotificationsService])
 ], AuthService);
 //# sourceMappingURL=auth.service.js.map

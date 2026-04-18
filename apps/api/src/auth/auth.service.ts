@@ -13,7 +13,7 @@ class TooManyRequestsException extends HttpException {
   }
 }
 import { PrismaService } from '../prisma/prisma.service';
-import { SmsService } from '../notifications/sms.service';
+import { NotificationsService } from '../notifications/notifications.service';
 import { SendOtpDto } from './dto/send-otp.dto';
 import { VerifyOtpDto } from './dto/verify-otp.dto';
 import { OtpPurpose } from '@prisma/client';
@@ -23,7 +23,7 @@ export class AuthService {
   constructor(
     private prisma: PrismaService,
     private jwtService: JwtService,
-    private smsService: SmsService,
+    private notificationsService: NotificationsService,
   ) {}
 
   async sendOtp(dto: SendOtpDto) {
@@ -53,7 +53,7 @@ export class AuthService {
       data: { phone, otp, purpose: OtpPurpose.LOGIN, expiresAt },
     });
 
-    await this.smsService.sendOtp(phone, otp);
+    await this.notificationsService.notifyOtpSend({ phone, otp });
 
     const userExists = await this.prisma.user.findUnique({
       where: { phone },

@@ -12,10 +12,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AdminService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../prisma/prisma.service");
+const notifications_service_1 = require("../notifications/notifications.service");
 const client_1 = require("@prisma/client");
 let AdminService = class AdminService {
-    constructor(prisma) {
+    constructor(prisma, notificationsService) {
         this.prisma = prisma;
+        this.notificationsService = notificationsService;
     }
     async getDashboardStats() {
         const today = new Date();
@@ -61,12 +63,23 @@ let AdminService = class AdminService {
         return { data: orders, meta: { total, page, limit, totalPages: Math.ceil(total / limit) } };
     }
     async updateOrderStatus(orderId, status, note, adminId) {
-        return this.prisma.$transaction([
-            this.prisma.order.update({ where: { id: orderId }, data: { status } }),
+        const [updatedOrder] = await this.prisma.$transaction([
+            this.prisma.order.update({
+                where: { id: orderId },
+                data: { status },
+                include: { user: { select: { phone: true, name: true } } },
+            }),
             this.prisma.orderStatusLog.create({
                 data: { orderId, status, note, createdBy: adminId },
             }),
         ]);
+        this.notificationsService.notifyOrderStatusChanged({
+            customerPhone: updatedOrder.user.phone,
+            customerName: updatedOrder.user.name,
+            orderNumber: updatedOrder.orderNumber,
+            status,
+        });
+        return updatedOrder;
     }
     async createProduct(data) {
         return this.prisma.product.create({ data });
@@ -91,10 +104,20 @@ let AdminService = class AdminService {
         });
     }
     async reviewPrescription(id, status, note) {
-        return this.prisma.prescription.update({
+        const prescription = await this.prisma.prescription.update({
             where: { id },
             data: { status, note },
+            include: { user: { select: { phone: true, name: true } } },
         });
+        if (status !== client_1.PrescriptionStatus.PENDING) {
+            this.notificationsService.notifyPrescriptionStatus({
+                customerPhone: prescription.user.phone,
+                customerName: prescription.user.name,
+                status,
+                note,
+            });
+        }
+        return prescription;
     }
     async createBanner(data) {
         return this.prisma.banner.create({ data });
@@ -125,6 +148,7 @@ let AdminService = class AdminService {
 exports.AdminService = AdminService;
 exports.AdminService = AdminService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
+        notifications_service_1.NotificationsService])
 ], AdminService);
 //# sourceMappingURL=admin.service.js.map

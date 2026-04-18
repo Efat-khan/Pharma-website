@@ -13,8 +13,8 @@ export declare class CategoriesController {
             createdAt: Date;
             isActive: boolean;
             updatedAt: Date;
-            sortOrder: number;
             slug: string;
+            sortOrder: number;
             image: string | null;
             parentId: string | null;
         }[];
@@ -25,8 +25,8 @@ export declare class CategoriesController {
         createdAt: Date;
         isActive: boolean;
         updatedAt: Date;
-        sortOrder: number;
         slug: string;
+        sortOrder: number;
         image: string | null;
         parentId: string | null;
     })[]>;
@@ -38,8 +38,8 @@ export declare class CategoriesController {
             createdAt: Date;
             isActive: boolean;
             updatedAt: Date;
-            sortOrder: number;
             slug: string;
+            sortOrder: number;
             image: string | null;
             parentId: string | null;
         }[];
@@ -50,8 +50,8 @@ export declare class CategoriesController {
         createdAt: Date;
         isActive: boolean;
         updatedAt: Date;
-        sortOrder: number;
         slug: string;
+        sortOrder: number;
         image: string | null;
         parentId: string | null;
     }>;

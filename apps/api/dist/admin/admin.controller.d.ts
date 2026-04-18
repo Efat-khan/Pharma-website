@@ -33,11 +33,11 @@ export declare class AdminController {
             };
             items: {
                 id: string;
+                productId: string;
+                quantity: number;
                 mrp: import("@prisma/client/runtime/library").Decimal;
                 sellingPrice: import("@prisma/client/runtime/library").Decimal;
                 total: import("@prisma/client/runtime/library").Decimal;
-                productId: string;
-                quantity: number;
                 productName: string;
                 productSku: string;
                 orderId: string;
@@ -66,7 +66,12 @@ export declare class AdminController {
             totalPages: number;
         };
     }>;
-    updateOrderStatus(id: string, status: OrderStatus, note: string, adminId: string): Promise<[{
+    updateOrderStatus(id: string, status: OrderStatus, note: string, adminId: string): Promise<{
+        user: {
+            name: string;
+            phone: string;
+        };
+    } & {
         id: string;
         createdAt: Date;
         userId: string;
@@ -82,14 +87,7 @@ export declare class AdminController {
         discount: import("@prisma/client/runtime/library").Decimal;
         addressSnapshot: import("@prisma/client/runtime/library").JsonValue;
         cancelReason: string | null;
-    }, {
-        id: string;
-        createdAt: Date;
-        status: import(".prisma/client").$Enums.OrderStatus;
-        orderId: string;
-        note: string | null;
-        createdBy: string | null;
-    }]>;
+    }>;
     createProduct(data: any): Promise<{
         name: string;
         description: string | null;
@@ -97,12 +95,9 @@ export declare class AdminController {
         createdAt: Date;
         isActive: boolean;
         updatedAt: Date;
-        categoryId: string;
-        brandId: string | null;
-        isFeatured: boolean;
+        slug: string;
         sku: string;
         genericName: string | null;
-        slug: string;
         shortDescription: string | null;
         mrp: import("@prisma/client/runtime/library").Decimal;
         sellingPrice: import("@prisma/client/runtime/library").Decimal;
@@ -111,6 +106,9 @@ export declare class AdminController {
         unit: string;
         packSize: string | null;
         requiresPrescription: boolean;
+        isFeatured: boolean;
+        categoryId: string;
+        brandId: string | null;
     }>;
     updateProduct(id: string, data: any): Promise<{
         name: string;
@@ -119,12 +117,9 @@ export declare class AdminController {
         createdAt: Date;
         isActive: boolean;
         updatedAt: Date;
-        categoryId: string;
-        brandId: string | null;
-        isFeatured: boolean;
+        slug: string;
         sku: string;
         genericName: string | null;
-        slug: string;
         shortDescription: string | null;
         mrp: import("@prisma/client/runtime/library").Decimal;
         sellingPrice: import("@prisma/client/runtime/library").Decimal;
@@ -133,6 +128,9 @@ export declare class AdminController {
         unit: string;
         packSize: string | null;
         requiresPrescription: boolean;
+        isFeatured: boolean;
+        categoryId: string;
+        brandId: string | null;
     }>;
     deleteProduct(id: string): Promise<{
         name: string;
@@ -141,12 +139,9 @@ export declare class AdminController {
         createdAt: Date;
         isActive: boolean;
         updatedAt: Date;
-        categoryId: string;
-        brandId: string | null;
-        isFeatured: boolean;
+        slug: string;
         sku: string;
         genericName: string | null;
-        slug: string;
         shortDescription: string | null;
         mrp: import("@prisma/client/runtime/library").Decimal;
         sellingPrice: import("@prisma/client/runtime/library").Decimal;
@@ -155,6 +150,9 @@ export declare class AdminController {
         unit: string;
         packSize: string | null;
         requiresPrescription: boolean;
+        isFeatured: boolean;
+        categoryId: string;
+        brandId: string | null;
     }>;
     createCategory(data: any): Promise<{
         name: string;
@@ -163,8 +161,8 @@ export declare class AdminController {
         createdAt: Date;
         isActive: boolean;
         updatedAt: Date;
-        sortOrder: number;
         slug: string;
+        sortOrder: number;
         image: string | null;
         parentId: string | null;
     }>;
@@ -195,6 +193,11 @@ export declare class AdminController {
         imageUrl: string;
     })[]>;
     reviewPrescription(id: string, status: PrescriptionStatus, note: string): Promise<{
+        user: {
+            name: string;
+            phone: string;
+        };
+    } & {
         id: string;
         createdAt: Date;
         userId: string;

@@ -1,7 +1,12 @@
+import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../prisma/prisma.service';
+import { SslcommerzService } from './sslcommerz.service';
 export declare class PaymentsService {
     private prisma;
-    constructor(prisma: PrismaService);
+    private config;
+    private ssl;
+    private readonly logger;
+    constructor(prisma: PrismaService, config: ConfigService, ssl: SslcommerzService);
     getPaymentByOrder(orderId: string): Promise<{
         id: string;
         createdAt: Date;
@@ -14,8 +19,12 @@ export declare class PaymentsService {
         gatewayResponse: import("@prisma/client/runtime/library").JsonValue | null;
         paidAt: Date | null;
     }>;
-    handleBkashWebhook(payload: any): Promise<{
-        received: boolean;
+    initiateSSL(userId: string, orderId: string): Promise<{
+        redirectURL: string;
+        orderId: string;
+    }>;
+    handleSslCallback(body: Record<string, any>, queryStatus: string): Promise<{
+        redirectUrl: string;
     }>;
     handleSslWebhook(payload: any): Promise<{
         received: boolean;

@@ -1,7 +1,8 @@
 'use client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
+import { useEffect } from 'react';
 import { CheckCircle, Clock, Truck, Package, XCircle, ChevronLeft } from 'lucide-react';
 import api from '@/lib/axios';
 import { formatPrice, formatDate, getOrderStatusColor } from '@/lib/utils';
@@ -15,7 +16,17 @@ const STATUS_ICONS: Record<string, any> = {
 export default function OrderDetailPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const qc = useQueryClient();
+
+  useEffect(() => {
+    const payment = searchParams.get('payment');
+    if (payment === 'success') {
+      toast.success('Payment successful! Your order is confirmed.');
+    } else if (payment === 'failed') {
+      toast.error('Payment failed. Please try again or choose Cash on Delivery.');
+    }
+  }, [searchParams]);
 
   const { data: order, isLoading } = useQuery({
     queryKey: ['order', id],
@@ -45,11 +56,27 @@ export default function OrderDetailPage() {
 
   const canCancel = ['PENDING', 'CONFIRMED'].includes(order.status);
 
+  const paymentParam = searchParams.get('payment');
+
   return (
     <div className="container-custom py-6 max-w-3xl">
       <button onClick={() => router.back()} className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 mb-5">
         <ChevronLeft className="w-4 h-4" /> Back to Orders
       </button>
+
+      {paymentParam === 'success' && (
+        <div className="mb-4 flex items-center gap-3 bg-green-50 border border-green-200 text-green-800 rounded-xl px-4 py-3 text-sm font-medium">
+          <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
+          Payment received! Your order has been confirmed.
+        </div>
+      )}
+
+      {paymentParam === 'failed' && (
+        <div className="mb-4 flex items-center gap-3 bg-red-50 border border-red-200 text-red-800 rounded-xl px-4 py-3 text-sm font-medium">
+          <XCircle className="w-5 h-5 text-red-500 flex-shrink-0" />
+          Payment was not completed. Your order is on hold — you can retry payment or contact support.
+        </div>
+      )}
 
       {/* Header */}
       <div className="bg-white rounded-xl border border-gray-100 p-5 mb-4">

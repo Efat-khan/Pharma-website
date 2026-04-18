@@ -18,11 +18,11 @@ export declare class OrdersController {
         };
         items: {
             id: string;
+            productId: string;
+            quantity: number;
             mrp: import("@prisma/client/runtime/library").Decimal;
             sellingPrice: import("@prisma/client/runtime/library").Decimal;
             total: import("@prisma/client/runtime/library").Decimal;
-            productId: string;
-            quantity: number;
             productName: string;
             productSku: string;
             orderId: string;
@@ -63,8 +63,8 @@ export declare class OrdersController {
                     images: {
                         id: string;
                         createdAt: Date;
-                        sortOrder: number;
                         productId: string;
+                        sortOrder: number;
                         url: string;
                         publicId: string | null;
                         isPrimary: boolean;
@@ -76,12 +76,9 @@ export declare class OrdersController {
                     createdAt: Date;
                     isActive: boolean;
                     updatedAt: Date;
-                    categoryId: string;
-                    brandId: string | null;
-                    isFeatured: boolean;
+                    slug: string;
                     sku: string;
                     genericName: string | null;
-                    slug: string;
                     shortDescription: string | null;
                     mrp: import("@prisma/client/runtime/library").Decimal;
                     sellingPrice: import("@prisma/client/runtime/library").Decimal;
@@ -90,14 +87,17 @@ export declare class OrdersController {
                     unit: string;
                     packSize: string | null;
                     requiresPrescription: boolean;
+                    isFeatured: boolean;
+                    categoryId: string;
+                    brandId: string | null;
                 };
             } & {
                 id: string;
+                productId: string;
+                quantity: number;
                 mrp: import("@prisma/client/runtime/library").Decimal;
                 sellingPrice: import("@prisma/client/runtime/library").Decimal;
                 total: import("@prisma/client/runtime/library").Decimal;
-                productId: string;
-                quantity: number;
                 productName: string;
                 productSku: string;
                 orderId: string;
@@ -144,8 +144,8 @@ export declare class OrdersController {
                 images: {
                     id: string;
                     createdAt: Date;
-                    sortOrder: number;
                     productId: string;
+                    sortOrder: number;
                     url: string;
                     publicId: string | null;
                     isPrimary: boolean;
@@ -157,12 +157,9 @@ export declare class OrdersController {
                 createdAt: Date;
                 isActive: boolean;
                 updatedAt: Date;
-                categoryId: string;
-                brandId: string | null;
-                isFeatured: boolean;
+                slug: string;
                 sku: string;
                 genericName: string | null;
-                slug: string;
                 shortDescription: string | null;
                 mrp: import("@prisma/client/runtime/library").Decimal;
                 sellingPrice: import("@prisma/client/runtime/library").Decimal;
@@ -171,14 +168,17 @@ export declare class OrdersController {
                 unit: string;
                 packSize: string | null;
                 requiresPrescription: boolean;
+                isFeatured: boolean;
+                categoryId: string;
+                brandId: string | null;
             };
         } & {
             id: string;
+            productId: string;
+            quantity: number;
             mrp: import("@prisma/client/runtime/library").Decimal;
             sellingPrice: import("@prisma/client/runtime/library").Decimal;
             total: import("@prisma/client/runtime/library").Decimal;
-            productId: string;
-            quantity: number;
             productName: string;
             productSku: string;
             orderId: string;

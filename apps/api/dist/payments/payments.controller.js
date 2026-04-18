@@ -17,6 +17,7 @@ const common_1 = require("@nestjs/common");
 const swagger_1 = require("@nestjs/swagger");
 const payments_service_1 = require("./payments.service");
 const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
+const current_user_decorator_1 = require("../common/decorators/current-user.decorator");
 let PaymentsController = class PaymentsController {
     constructor(paymentsService) {
         this.paymentsService = paymentsService;
@@ -24,8 +25,12 @@ let PaymentsController = class PaymentsController {
     getPayment(orderId) {
         return this.paymentsService.getPaymentByOrder(orderId);
     }
-    bkashWebhook(payload) {
-        return this.paymentsService.handleBkashWebhook(payload);
+    initiateSSL(user, orderId) {
+        return this.paymentsService.initiateSSL(user.id, orderId);
+    }
+    async sslCallback(body, queryStatus, res) {
+        const { redirectUrl } = await this.paymentsService.handleSslCallback(body, queryStatus);
+        return res.redirect(redirectUrl);
     }
     sslWebhook(payload) {
         return this.paymentsService.handleSslWebhook(payload);
@@ -42,14 +47,29 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], PaymentsController.prototype, "getPayment", null);
 __decorate([
-    (0, common_1.Post)('webhooks/bkash'),
-    __param(0, (0, common_1.Body)()),
+    (0, common_1.Post)('sslcommerz/initiate'),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, swagger_1.ApiOperation)({ summary: 'Create SSLCommerz payment session for an order' }),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __param(1, (0, common_1.Body)('orderId')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [Object, String]),
     __metadata("design:returntype", void 0)
-], PaymentsController.prototype, "bkashWebhook", null);
+], PaymentsController.prototype, "initiateSSL", null);
+__decorate([
+    (0, common_1.Post)('sslcommerz/callback'),
+    (0, swagger_1.ApiOperation)({ summary: 'SSLCommerz POSTs here for success/fail/cancel' }),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Query)('status')),
+    __param(2, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String, Object]),
+    __metadata("design:returntype", Promise)
+], PaymentsController.prototype, "sslCallback", null);
 __decorate([
     (0, common_1.Post)('webhooks/sslcommerz'),
+    (0, swagger_1.ApiOperation)({ summary: 'SSLCommerz IPN webhook' }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),

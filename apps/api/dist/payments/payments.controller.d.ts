@@ -1,3 +1,4 @@
+import { Response } from 'express';
 import { PaymentsService } from './payments.service';
 export declare class PaymentsController {
     private paymentsService;
@@ -14,9 +15,11 @@ export declare class PaymentsController {
         gatewayResponse: import("@prisma/client/runtime/library").JsonValue | null;
         paidAt: Date | null;
     }>;
-    bkashWebhook(payload: any): Promise<{
-        received: boolean;
+    initiateSSL(user: any, orderId: string): Promise<{
+        redirectURL: string;
+        orderId: string;
     }>;
+    sslCallback(body: Record<string, any>, queryStatus: string, res: Response): Promise<void>;
     sslWebhook(payload: any): Promise<{
         received: boolean;
     }>;

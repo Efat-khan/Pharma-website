@@ -28,8 +28,8 @@ export declare class ProductsService {
             images: {
                 id: string;
                 createdAt: Date;
-                sortOrder: number;
                 productId: string;
+                sortOrder: number;
                 url: string;
                 publicId: string | null;
                 isPrimary: boolean;
@@ -41,12 +41,9 @@ export declare class ProductsService {
             createdAt: Date;
             isActive: boolean;
             updatedAt: Date;
-            categoryId: string;
-            brandId: string | null;
-            isFeatured: boolean;
+            slug: string;
             sku: string;
             genericName: string | null;
-            slug: string;
             shortDescription: string | null;
             mrp: import("@prisma/client/runtime/library").Decimal;
             sellingPrice: import("@prisma/client/runtime/library").Decimal;
@@ -55,6 +52,9 @@ export declare class ProductsService {
             unit: string;
             packSize: string | null;
             requiresPrescription: boolean;
+            isFeatured: boolean;
+            categoryId: string;
+            brandId: string | null;
         })[];
         meta: {
             total: number;
@@ -71,8 +71,8 @@ export declare class ProductsService {
             createdAt: Date;
             isActive: boolean;
             updatedAt: Date;
-            sortOrder: number;
             slug: string;
+            sortOrder: number;
             image: string | null;
             parentId: string | null;
         };
@@ -88,8 +88,8 @@ export declare class ProductsService {
         images: {
             id: string;
             createdAt: Date;
-            sortOrder: number;
             productId: string;
+            sortOrder: number;
             url: string;
             publicId: string | null;
             isPrimary: boolean;
@@ -101,12 +101,9 @@ export declare class ProductsService {
         createdAt: Date;
         isActive: boolean;
         updatedAt: Date;
-        categoryId: string;
-        brandId: string | null;
-        isFeatured: boolean;
+        slug: string;
         sku: string;
         genericName: string | null;
-        slug: string;
         shortDescription: string | null;
         mrp: import("@prisma/client/runtime/library").Decimal;
         sellingPrice: import("@prisma/client/runtime/library").Decimal;
@@ -115,6 +112,9 @@ export declare class ProductsService {
         unit: string;
         packSize: string | null;
         requiresPrescription: boolean;
+        isFeatured: boolean;
+        categoryId: string;
+        brandId: string | null;
     }>;
     findById(id: string): Promise<{
         category: {
@@ -130,8 +130,8 @@ export declare class ProductsService {
         images: {
             id: string;
             createdAt: Date;
-            sortOrder: number;
             productId: string;
+            sortOrder: number;
             url: string;
             publicId: string | null;
             isPrimary: boolean;
@@ -143,12 +143,9 @@ export declare class ProductsService {
         createdAt: Date;
         isActive: boolean;
         updatedAt: Date;
-        categoryId: string;
-        brandId: string | null;
-        isFeatured: boolean;
+        slug: string;
         sku: string;
         genericName: string | null;
-        slug: string;
         shortDescription: string | null;
         mrp: import("@prisma/client/runtime/library").Decimal;
         sellingPrice: import("@prisma/client/runtime/library").Decimal;
@@ -157,13 +154,16 @@ export declare class ProductsService {
         unit: string;
         packSize: string | null;
         requiresPrescription: boolean;
+        isFeatured: boolean;
+        categoryId: string;
+        brandId: string | null;
     }>;
     getFeatured(limit?: number): Promise<({
         images: {
             id: string;
             createdAt: Date;
-            sortOrder: number;
             productId: string;
+            sortOrder: number;
             url: string;
             publicId: string | null;
             isPrimary: boolean;
@@ -175,12 +175,9 @@ export declare class ProductsService {
         createdAt: Date;
         isActive: boolean;
         updatedAt: Date;
-        categoryId: string;
-        brandId: string | null;
-        isFeatured: boolean;
+        slug: string;
         sku: string;
         genericName: string | null;
-        slug: string;
         shortDescription: string | null;
         mrp: import("@prisma/client/runtime/library").Decimal;
         sellingPrice: import("@prisma/client/runtime/library").Decimal;
@@ -189,6 +186,9 @@ export declare class ProductsService {
         unit: string;
         packSize: string | null;
         requiresPrescription: boolean;
+        isFeatured: boolean;
+        categoryId: string;
+        brandId: string | null;
     })[]>;
     getByCategory(categorySlug: string, page?: number, limit?: number): Promise<{
         data: ({
@@ -205,8 +205,8 @@ export declare class ProductsService {
             images: {
                 id: string;
                 createdAt: Date;
-                sortOrder: number;
                 productId: string;
+                sortOrder: number;
                 url: string;
                 publicId: string | null;
                 isPrimary: boolean;
@@ -218,12 +218,9 @@ export declare class ProductsService {
             createdAt: Date;
             isActive: boolean;
             updatedAt: Date;
-            categoryId: string;
-            brandId: string | null;
-            isFeatured: boolean;
+            slug: string;
             sku: string;
             genericName: string | null;
-            slug: string;
             shortDescription: string | null;
             mrp: import("@prisma/client/runtime/library").Decimal;
             sellingPrice: import("@prisma/client/runtime/library").Decimal;
@@ -232,6 +229,9 @@ export declare class ProductsService {
             unit: string;
             packSize: string | null;
             requiresPrescription: boolean;
+            isFeatured: boolean;
+            categoryId: string;
+            brandId: string | null;
         })[];
         meta: {
             total: number;

@@ -17,8 +17,8 @@ export declare class ProductsController {
             images: {
                 id: string;
                 createdAt: Date;
-                sortOrder: number;
                 productId: string;
+                sortOrder: number;
                 url: string;
                 publicId: string | null;
                 isPrimary: boolean;
@@ -30,12 +30,9 @@ export declare class ProductsController {
             createdAt: Date;
             isActive: boolean;
             updatedAt: Date;
-            categoryId: string;
-            brandId: string | null;
-            isFeatured: boolean;
+            slug: string;
             sku: string;
             genericName: string | null;
-            slug: string;
             shortDescription: string | null;
             mrp: import("@prisma/client/runtime/library").Decimal;
             sellingPrice: import("@prisma/client/runtime/library").Decimal;
@@ -44,6 +41,9 @@ export declare class ProductsController {
             unit: string;
             packSize: string | null;
             requiresPrescription: boolean;
+            isFeatured: boolean;
+            categoryId: string;
+            brandId: string | null;
         })[];
         meta: {
             total: number;
@@ -56,8 +56,8 @@ export declare class ProductsController {
         images: {
             id: string;
             createdAt: Date;
-            sortOrder: number;
             productId: string;
+            sortOrder: number;
             url: string;
             publicId: string | null;
             isPrimary: boolean;
@@ -69,12 +69,9 @@ export declare class ProductsController {
         createdAt: Date;
         isActive: boolean;
         updatedAt: Date;
-        categoryId: string;
-        brandId: string | null;
-        isFeatured: boolean;
+        slug: string;
         sku: string;
         genericName: string | null;
-        slug: string;
         shortDescription: string | null;
         mrp: import("@prisma/client/runtime/library").Decimal;
         sellingPrice: import("@prisma/client/runtime/library").Decimal;
@@ -83,6 +80,9 @@ export declare class ProductsController {
         unit: string;
         packSize: string | null;
         requiresPrescription: boolean;
+        isFeatured: boolean;
+        categoryId: string;
+        brandId: string | null;
     })[]>;
     getByCategory(slug: string, page?: number, limit?: number): Promise<{
         data: ({
@@ -99,8 +99,8 @@ export declare class ProductsController {
             images: {
                 id: string;
                 createdAt: Date;
-                sortOrder: number;
                 productId: string;
+                sortOrder: number;
                 url: string;
                 publicId: string | null;
                 isPrimary: boolean;
@@ -112,12 +112,9 @@ export declare class ProductsController {
             createdAt: Date;
             isActive: boolean;
             updatedAt: Date;
-            categoryId: string;
-            brandId: string | null;
-            isFeatured: boolean;
+            slug: string;
             sku: string;
             genericName: string | null;
-            slug: string;
             shortDescription: string | null;
             mrp: import("@prisma/client/runtime/library").Decimal;
             sellingPrice: import("@prisma/client/runtime/library").Decimal;
@@ -126,6 +123,9 @@ export declare class ProductsController {
             unit: string;
             packSize: string | null;
             requiresPrescription: boolean;
+            isFeatured: boolean;
+            categoryId: string;
+            brandId: string | null;
         })[];
         meta: {
             total: number;
@@ -142,8 +142,8 @@ export declare class ProductsController {
             createdAt: Date;
             isActive: boolean;
             updatedAt: Date;
-            sortOrder: number;
             slug: string;
+            sortOrder: number;
             image: string | null;
             parentId: string | null;
         };
@@ -159,8 +159,8 @@ export declare class ProductsController {
         images: {
             id: string;
             createdAt: Date;
-            sortOrder: number;
             productId: string;
+            sortOrder: number;
             url: string;
             publicId: string | null;
             isPrimary: boolean;
@@ -172,12 +172,9 @@ export declare class ProductsController {
         createdAt: Date;
         isActive: boolean;
         updatedAt: Date;
-        categoryId: string;
-        brandId: string | null;
-        isFeatured: boolean;
+        slug: string;
         sku: string;
         genericName: string | null;
-        slug: string;
         shortDescription: string | null;
         mrp: import("@prisma/client/runtime/library").Decimal;
         sellingPrice: import("@prisma/client/runtime/library").Decimal;
@@ -186,5 +183,8 @@ export declare class ProductsController {
         unit: string;
         packSize: string | null;
         requiresPrescription: boolean;
+        isFeatured: boolean;
+        categoryId: string;
+        brandId: string | null;
     }>;
 }

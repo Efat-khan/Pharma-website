@@ -1,13 +1,13 @@
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../prisma/prisma.service';
-import { SmsService } from '../notifications/sms.service';
+import { NotificationsService } from '../notifications/notifications.service';
 import { SendOtpDto } from './dto/send-otp.dto';
 import { VerifyOtpDto } from './dto/verify-otp.dto';
 export declare class AuthService {
     private prisma;
     private jwtService;
-    private smsService;
-    constructor(prisma: PrismaService, jwtService: JwtService, smsService: SmsService);
+    private notificationsService;
+    constructor(prisma: PrismaService, jwtService: JwtService, notificationsService: NotificationsService);
     sendOtp(dto: SendOtpDto): Promise<{
         message: string;
         isNewUser: boolean;

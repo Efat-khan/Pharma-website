@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CartService } from '../cart/cart.service';
+import { NotificationsService } from '../notifications/notifications.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { OrderStatus, PaymentMethod, PaymentStatus } from '@prisma/client';
 
@@ -14,6 +15,7 @@ export class OrdersService {
   constructor(
     private prisma: PrismaService,
     private cartService: CartService,
+    private notificationsService: NotificationsService,
   ) {}
 
   async createOrder(userId: string, dto: CreateOrderDto) {
@@ -134,13 +136,24 @@ export class OrdersService {
       });
 
       for (const item of cart.items) {
-        await tx.product.update({
+        const updated = await tx.product.update({
           where: { id: item.productId },
           data: {
             stock: { decrement: item.quantity },
             reservedStock: { decrement: item.quantity },
           },
         });
+        if (updated.stock < 10) {
+          const adminEmail = process.env.ADMIN_EMAIL || process.env.FROM_EMAIL || '';
+          if (adminEmail) {
+            this.notificationsService.notifyLowStock({
+              adminEmail,
+              productName: item.product.name,
+              sku: item.product.sku,
+              stock: updated.stock,
+            });
+          }
+        }
       }
 
       if (dto.couponCode) {
@@ -161,6 +174,30 @@ export class OrdersService {
 
       return newOrder;
     });
+
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { phone: true, name: true, email: true },
+    });
+
+    if (user) {
+      this.notificationsService.notifyOrderPlaced({
+        customerPhone: user.phone,
+        customerEmail: user.email,
+        customerName: user.name,
+        orderNumber: order.orderNumber,
+        items: cart.items.map((i) => ({
+          productName: i.product.name,
+          quantity: i.quantity,
+          total: Number(i.product.sellingPrice) * i.quantity,
+        })),
+        subtotal,
+        deliveryCharge,
+        discount,
+        total,
+        paymentMethod: dto.paymentMethod,
+      });
+    }
 
     return order;
   }

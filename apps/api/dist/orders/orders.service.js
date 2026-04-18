@@ -13,11 +13,13 @@ exports.OrdersService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../prisma/prisma.service");
 const cart_service_1 = require("../cart/cart.service");
+const notifications_service_1 = require("../notifications/notifications.service");
 const client_1 = require("@prisma/client");
 let OrdersService = class OrdersService {
-    constructor(prisma, cartService) {
+    constructor(prisma, cartService, notificationsService) {
         this.prisma = prisma;
         this.cartService = cartService;
+        this.notificationsService = notificationsService;
     }
     async createOrder(userId, dto) {
         const cart = await this.prisma.cart.findUnique({
@@ -116,13 +118,24 @@ let OrdersService = class OrdersService {
                 include: { items: true, payment: true },
             });
             for (const item of cart.items) {
-                await tx.product.update({
+                const updated = await tx.product.update({
                     where: { id: item.productId },
                     data: {
                         stock: { decrement: item.quantity },
                         reservedStock: { decrement: item.quantity },
                     },
                 });
+                if (updated.stock < 10) {
+                    const adminEmail = process.env.ADMIN_EMAIL || process.env.FROM_EMAIL || '';
+                    if (adminEmail) {
+                        this.notificationsService.notifyLowStock({
+                            adminEmail,
+                            productName: item.product.name,
+                            sku: item.product.sku,
+                            stock: updated.stock,
+                        });
+                    }
+                }
             }
             if (dto.couponCode) {
                 await tx.coupon.update({
@@ -139,6 +152,28 @@ let OrdersService = class OrdersService {
             await tx.cartItem.deleteMany({ where: { cartId: cart.id } });
             return newOrder;
         });
+        const user = await this.prisma.user.findUnique({
+            where: { id: userId },
+            select: { phone: true, name: true, email: true },
+        });
+        if (user) {
+            this.notificationsService.notifyOrderPlaced({
+                customerPhone: user.phone,
+                customerEmail: user.email,
+                customerName: user.name,
+                orderNumber: order.orderNumber,
+                items: cart.items.map((i) => ({
+                    productName: i.product.name,
+                    quantity: i.quantity,
+                    total: Number(i.product.sellingPrice) * i.quantity,
+                })),
+                subtotal,
+                deliveryCharge,
+                discount,
+                total,
+                paymentMethod: dto.paymentMethod,
+            });
+        }
         return order;
     }
     async getUserOrders(userId, page = 1, limit = 10) {
@@ -233,6 +268,7 @@ exports.OrdersService = OrdersService;
 exports.OrdersService = OrdersService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
-        cart_service_1.CartService])
+        cart_service_1.CartService,
+        notifications_service_1.NotificationsService])
 ], OrdersService);
 //# sourceMappingURL=orders.service.js.map

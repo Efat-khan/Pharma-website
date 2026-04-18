@@ -1,10 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { NotificationsService } from '../notifications/notifications.service';
 import { OrderStatus, PrescriptionStatus } from '@prisma/client';
 
 @Injectable()
 export class AdminService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private notificationsService: NotificationsService,
+  ) {}
 
   async getDashboardStats() {
     const today = new Date();
@@ -62,12 +66,25 @@ export class AdminService {
   }
 
   async updateOrderStatus(orderId: string, status: OrderStatus, note?: string, adminId?: string) {
-    return this.prisma.$transaction([
-      this.prisma.order.update({ where: { id: orderId }, data: { status } }),
+    const [updatedOrder] = await this.prisma.$transaction([
+      this.prisma.order.update({
+        where: { id: orderId },
+        data: { status },
+        include: { user: { select: { phone: true, name: true } } },
+      }),
       this.prisma.orderStatusLog.create({
         data: { orderId, status, note, createdBy: adminId },
       }),
     ]);
+
+    this.notificationsService.notifyOrderStatusChanged({
+      customerPhone: updatedOrder.user.phone,
+      customerName: updatedOrder.user.name,
+      orderNumber: updatedOrder.orderNumber,
+      status,
+    });
+
+    return updatedOrder;
   }
 
   async createProduct(data: any) {
@@ -99,10 +116,22 @@ export class AdminService {
   }
 
   async reviewPrescription(id: string, status: PrescriptionStatus, note?: string) {
-    return this.prisma.prescription.update({
+    const prescription = await this.prisma.prescription.update({
       where: { id },
       data: { status, note },
+      include: { user: { select: { phone: true, name: true } } },
     });
+
+    if (status !== PrescriptionStatus.PENDING) {
+      this.notificationsService.notifyPrescriptionStatus({
+        customerPhone: prescription.user.phone,
+        customerName: prescription.user.name,
+        status,
+        note,
+      });
+    }
+
+    return prescription;
   }
 
   async createBanner(data: any) {

@@ -1,8 +1,10 @@
 import { PrismaService } from '../prisma/prisma.service';
+import { NotificationsService } from '../notifications/notifications.service';
 import { OrderStatus, PrescriptionStatus } from '@prisma/client';
 export declare class AdminService {
     private prisma;
-    constructor(prisma: PrismaService);
+    private notificationsService;
+    constructor(prisma: PrismaService, notificationsService: NotificationsService);
     getDashboardStats(): Promise<{
         totalOrders: number;
         todayOrders: number;
@@ -33,11 +35,11 @@ export declare class AdminService {
             };
             items: {
                 id: string;
+                productId: string;
+                quantity: number;
                 mrp: import("@prisma/client/runtime/library").Decimal;
                 sellingPrice: import("@prisma/client/runtime/library").Decimal;
                 total: import("@prisma/client/runtime/library").Decimal;
-                productId: string;
-                quantity: number;
                 productName: string;
                 productSku: string;
                 orderId: string;
@@ -66,7 +68,12 @@ export declare class AdminService {
             totalPages: number;
         };
     }>;
-    updateOrderStatus(orderId: string, status: OrderStatus, note?: string, adminId?: string): Promise<[{
+    updateOrderStatus(orderId: string, status: OrderStatus, note?: string, adminId?: string): Promise<{
+        user: {
+            name: string;
+            phone: string;
+        };
+    } & {
         id: string;
         createdAt: Date;
         userId: string;
@@ -82,14 +89,7 @@ export declare class AdminService {
         discount: import("@prisma/client/runtime/library").Decimal;
         addressSnapshot: import("@prisma/client/runtime/library").JsonValue;
         cancelReason: string | null;
-    }, {
-        id: string;
-        createdAt: Date;
-        status: import(".prisma/client").$Enums.OrderStatus;
-        orderId: string;
-        note: string | null;
-        createdBy: string | null;
-    }]>;
+    }>;
     createProduct(data: any): Promise<{
         name: string;
         description: string | null;
@@ -97,12 +97,9 @@ export declare class AdminService {
         createdAt: Date;
         isActive: boolean;
         updatedAt: Date;
-        categoryId: string;
-        brandId: string | null;
-        isFeatured: boolean;
+        slug: string;
         sku: string;
         genericName: string | null;
-        slug: string;
         shortDescription: string | null;
         mrp: import("@prisma/client/runtime/library").Decimal;
         sellingPrice: import("@prisma/client/runtime/library").Decimal;
@@ -111,6 +108,9 @@ export declare class AdminService {
         unit: string;
         packSize: string | null;
         requiresPrescription: boolean;
+        isFeatured: boolean;
+        categoryId: string;
+        brandId: string | null;
     }>;
     updateProduct(id: string, data: any): Promise<{
         name: string;
@@ -119,12 +119,9 @@ export declare class AdminService {
         createdAt: Date;
         isActive: boolean;
         updatedAt: Date;
-        categoryId: string;
-        brandId: string | null;
-        isFeatured: boolean;
+        slug: string;
         sku: string;
         genericName: string | null;
-        slug: string;
         shortDescription: string | null;
         mrp: import("@prisma/client/runtime/library").Decimal;
         sellingPrice: import("@prisma/client/runtime/library").Decimal;
@@ -133,6 +130,9 @@ export declare class AdminService {
         unit: string;
         packSize: string | null;
         requiresPrescription: boolean;
+        isFeatured: boolean;
+        categoryId: string;
+        brandId: string | null;
     }>;
     deleteProduct(id: string): Promise<{
         name: string;
@@ -141,12 +141,9 @@ export declare class AdminService {
         createdAt: Date;
         isActive: boolean;
         updatedAt: Date;
-        categoryId: string;
-        brandId: string | null;
-        isFeatured: boolean;
+        slug: string;
         sku: string;
         genericName: string | null;
-        slug: string;
         shortDescription: string | null;
         mrp: import("@prisma/client/runtime/library").Decimal;
         sellingPrice: import("@prisma/client/runtime/library").Decimal;
@@ -155,6 +152,9 @@ export declare class AdminService {
         unit: string;
         packSize: string | null;
         requiresPrescription: boolean;
+        isFeatured: boolean;
+        categoryId: string;
+        brandId: string | null;
     }>;
     createCategory(data: any): Promise<{
         name: string;
@@ -163,8 +163,8 @@ export declare class AdminService {
         createdAt: Date;
         isActive: boolean;
         updatedAt: Date;
-        sortOrder: number;
         slug: string;
+        sortOrder: number;
         image: string | null;
         parentId: string | null;
     }>;
@@ -195,6 +195,11 @@ export declare class AdminService {
         imageUrl: string;
     })[]>;
     reviewPrescription(id: string, status: PrescriptionStatus, note?: string): Promise<{
+        user: {
+            name: string;
+            phone: string;
+        };
+    } & {
         id: string;
         createdAt: Date;
         userId: string;
