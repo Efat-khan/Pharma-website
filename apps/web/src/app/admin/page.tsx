@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { ShoppingBag, Users, Package, FileText, TrendingUp, Clock } from 'lucide-react';
 import api from '@/lib/axios';
 import { formatPrice } from '@/lib/utils';
+import { usePendingPrescriptionCount } from '@/lib/api/prescriptions';
 
 export default function AdminDashboard() {
   const user = useAuthStore((s) => s.user);
@@ -26,6 +27,8 @@ export default function AdminDashboard() {
     queryKey: ['admin-orders'],
     queryFn: () => api.get('/admin/orders?limit=5').then(r => r.data),
   });
+
+  const { data: pendingRxCount } = usePendingPrescriptionCount();
 
   const statCards = [
     { label: 'Total Orders', value: stats?.totalOrders ?? '—', icon: ShoppingBag, color: 'bg-blue-50 text-blue-600' },
@@ -84,7 +87,7 @@ export default function AdminDashboard() {
           {[
             { href: '/admin/orders', label: 'Manage Orders', icon: ShoppingBag, desc: 'View and update order statuses' },
             { href: '/admin/products', label: 'Manage Products', icon: Package, desc: 'Add, edit, delete products' },
-            { href: '/admin/prescriptions', label: 'Review Prescriptions', icon: FileText, desc: `${stats?.pendingPrescriptions || 0} pending review` },
+            { href: '/admin/prescriptions', label: 'Review Prescriptions', icon: FileText, desc: `${pendingRxCount ?? stats?.pendingPrescriptions ?? 0} pending review`, badge: pendingRxCount },
           ].map((item) => {
             const Icon = item.icon;
             return (
@@ -93,8 +96,13 @@ export default function AdminDashboard() {
                 href={item.href}
                 className="bg-white rounded-xl border border-gray-100 p-5 hover:shadow-md hover:border-brand-100 transition-all flex items-start gap-4"
               >
-                <div className="w-12 h-12 bg-brand-50 rounded-xl flex items-center justify-center">
+                <div className="relative w-12 h-12 bg-brand-50 rounded-xl flex items-center justify-center shrink-0">
                   <Icon className="w-6 h-6 text-brand-600" />
+                  {'badge' in item && (item.badge ?? 0) > 0 && (
+                    <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center leading-none">
+                      {(item.badge as number) > 99 ? '99+' : item.badge}
+                    </span>
+                  )}
                 </div>
                 <div>
                   <p className="font-semibold text-gray-800">{item.label}</p>
