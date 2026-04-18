@@ -87,6 +87,59 @@ export class AdminService {
     return updatedOrder;
   }
 
+  async getProducts(query: {
+    search?: string;
+    categoryId?: string;
+    brandId?: string;
+    isActive?: string;
+    requiresPrescription?: string;
+    page?: number;
+    limit?: number;
+  }) {
+    const { search, categoryId, brandId, isActive, requiresPrescription, page = 1, limit = 20 } = query;
+    const where: any = {};
+
+    if (search) {
+      where.OR = [
+        { name: { contains: search, mode: 'insensitive' } },
+        { genericName: { contains: search, mode: 'insensitive' } },
+        { sku: { contains: search, mode: 'insensitive' } },
+      ];
+    }
+    if (categoryId) where.categoryId = categoryId;
+    if (brandId) where.brandId = brandId;
+    if (isActive !== undefined) where.isActive = isActive === 'true';
+    if (requiresPrescription !== undefined) where.requiresPrescription = requiresPrescription === 'true';
+
+    const [total, items] = await this.prisma.$transaction([
+      this.prisma.product.count({ where }),
+      this.prisma.product.findMany({
+        where,
+        include: {
+          images: { orderBy: { sortOrder: 'asc' } },
+          category: { select: { id: true, name: true, slug: true } },
+          brand: { select: { id: true, name: true, slug: true } },
+        },
+        orderBy: { createdAt: 'desc' },
+        skip: (page - 1) * limit,
+        take: Number(limit),
+      }),
+    ]);
+
+    return { data: items, meta: { total, page: Number(page), limit: Number(limit), totalPages: Math.ceil(total / limit) } };
+  }
+
+  async getProductById(id: string) {
+    return this.prisma.product.findUnique({
+      where: { id },
+      include: {
+        images: { orderBy: { sortOrder: 'asc' } },
+        category: { select: { id: true, name: true, slug: true } },
+        brand: { select: { id: true, name: true, slug: true } },
+      },
+    });
+  }
+
   async createProduct(data: any) {
     return this.prisma.product.create({ data });
   }
@@ -97,6 +150,22 @@ export class AdminService {
 
   async deleteProduct(id: string) {
     return this.prisma.product.update({ where: { id }, data: { isActive: false } });
+  }
+
+  async getAllCategories() {
+    return this.prisma.category.findMany({
+      where: { isActive: true },
+      select: { id: true, name: true, slug: true },
+      orderBy: { name: 'asc' },
+    });
+  }
+
+  async getAllBrands() {
+    return this.prisma.brand.findMany({
+      where: { isActive: true },
+      select: { id: true, name: true, slug: true },
+      orderBy: { name: 'asc' },
+    });
   }
 
   async createCategory(data: any) {

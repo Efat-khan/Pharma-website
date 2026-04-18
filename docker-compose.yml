@@ -84,6 +84,8 @@ services:
     environment:
       NEXT_PUBLIC_API_URL: http://api:4000
       NEXT_PUBLIC_APP_NAME: Pharmaci
+      NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: your_cloud_name
+      NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET: pharmaci_products
     volumes:
       - ./apps/web:/app
       - web_node_modules:/app/node_modules

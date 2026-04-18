@@ -40,10 +40,20 @@ export class AdminController {
     return this.adminService.updateOrderStatus(id, status, note, adminId);
   }
 
+  @Get('products')
+  getProducts(@Query() query: any) {
+    return this.adminService.getProducts(query);
+  }
+
   @Post('products')
   @Roles(Role.ADMIN)
   createProduct(@Body() data: any) {
     return this.adminService.createProduct(data);
+  }
+
+  @Get('products/:id')
+  getProduct(@Param('id') id: string) {
+    return this.adminService.getProductById(id);
   }
 
   @Patch('products/:id')
@@ -56,6 +66,16 @@ export class AdminController {
   @Roles(Role.ADMIN)
   deleteProduct(@Param('id') id: string) {
     return this.adminService.deleteProduct(id);
+  }
+
+  @Get('categories')
+  getCategories() {
+    return this.adminService.getAllCategories();
+  }
+
+  @Get('brands')
+  getBrands() {
+    return this.adminService.getAllBrands();
   }
 
   @Post('categories')

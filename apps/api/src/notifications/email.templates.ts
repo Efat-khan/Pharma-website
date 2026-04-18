@@ -1,5 +1,5 @@
 export function orderPlacedEmail(data: {
-  customerName: string;
+  customerName?: string;
   orderNumber: string;
   items: { productName: string; quantity: number; total: number }[];
   subtotal: number;
